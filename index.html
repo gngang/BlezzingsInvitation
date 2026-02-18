@@ -1024,7 +1024,7 @@
   // 4. Account → API Keys → paste Public Key below
   const EMAILJS_PUBLIC_KEY  = 'txMxmJGO7Dw_3jINS';
   const EMAILJS_SERVICE_ID  = 'service_mi3m8t4';
-  const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';  // ← still need this from EmailJS
+  const EMAILJS_TEMPLATE_ID = 'template_idyujcx';
   const NOTIFY_EMAIL        = 'blezzingnzama@gmail.com';
 
   // Init EmailJS
@@ -1075,16 +1075,16 @@
   }
 
   // ── STORAGE HELPERS ─────────────────────────────────
-  async function loadGuests() {
+  function loadGuests() {
     try {
-      const result = await window.storage.get(STORAGE_KEY, true);
-      return result ? JSON.parse(result.value) : [];
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
     } catch { return []; }
   }
 
-  async function saveGuests(guests) {
+  function saveGuests(guests) {
     try {
-      await window.storage.set(STORAGE_KEY, JSON.stringify(guests), true);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(guests));
     } catch(e) { console.error('Storage error', e); }
   }
 
@@ -1103,7 +1103,7 @@
 
     let guests = [];
     try {
-      guests = await loadGuests();
+      guests = loadGuests();
     } catch(e) {
       console.error('Load error:', e);
     }
@@ -1119,7 +1119,7 @@
     }
 
     try {
-      await saveGuests(guests);
+      saveGuests(guests);
     } catch(e) {
       console.error('Save error:', e);
       msg.textContent = 'Something went wrong saving your RSVP. Please try again.';
@@ -1159,13 +1159,13 @@
     btn.textContent = 'Reply sent ✓';
 
     // Re-render attendees immediately
-    await renderAttendees();
+    renderAttendees();
   }
 
   // ── RENDER ATTENDEES ────────────────────────────────
   async function renderAttendees() {
     let guests = [];
-    try { guests = await loadGuests(); } catch(e) { console.error('renderAttendees load error:', e); }
+    try { guests = loadGuests(); } catch(e) { console.error('renderAttendees load error:', e); }
 
     const list = document.getElementById('attendeeList');
     list.innerHTML = '';
@@ -1247,6 +1247,9 @@
 
   // ── INIT ─────────────────────────────────────────────
   renderAttendees();
+
+  // Poll every 10s so guests see new RSVPs without refreshing
+  setInterval(renderAttendees, 10000);
 </script>
 </body>
 </html>
