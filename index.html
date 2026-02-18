@@ -935,26 +935,31 @@
       <button class="rsvp-submit" id="rsvpSubmit" onclick="submitRsvp()">Send my reply →</button>
       <p class="rsvp-message" id="rsvpMsg"></p>
     </div>
+
+    <!-- Attendees live right below the form — no scrolling needed -->
+    <div style="margin-top: 48px;">
+      <h3 style="font-family:'Playfair Display',serif; font-size:1.4rem; font-style:italic; color:white; text-align:center; margin-bottom:6px;">
+        Who's coming <span id="attendeeCount" style="font-size:1rem; color:#cc0000; font-style:normal;"></span>
+      </h3>
+      <p style="text-align:center; color:rgba(255,255,255,0.4); font-style:italic; font-size:0.9rem; margin-bottom:20px;">Guests who have confirmed</p>
+
+      <div class="attendee-list" id="attendeeList">
+        <p style="color:rgba(255,255,255,0.3); font-style:italic; text-align:center; font-size:0.95rem; padding:16px 0;">
+          No replies yet — be the first!
+        </p>
+      </div>
+
+      <div style="text-align:center; margin-top:16px;">
+        <button onclick="showCreatorModal()" style="background:transparent; border:1px solid rgba(255,255,255,0.2); color:rgba(255,255,255,0.5); padding:8px 20px; font-family:'Cormorant Garamond',serif; font-style:italic; cursor:pointer; font-size:0.9rem; letter-spacing:0.05em; transition:all 0.3s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.5)';this.style.color='rgba(255,255,255,0.8)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.2)';this.style.color='rgba(255,255,255,0.5)'">
+          Creator view — see all replies
+        </button>
+      </div>
+    </div>
   </div>
 </section>
 
-<!-- SECTION 4: ATTENDEES -->
-<section id="attendees">
-  <div class="attendees-container">
-    <h2 class="section-heading reveal">Who's coming <span id="attendeeCount" style="font-size:1rem; color:#cc0000; font-style:normal; margin-left:8px;"></span></h2>
-    <p class="section-sub reveal">Guests who have confirmed</p>
-
-    <div class="attendee-list" id="attendeeList">
-      <p style="color:rgba(255,255,255,0.3); font-style:italic; text-align:center; font-size:0.95rem; padding: 16px 0;">
-        No replies yet — be the first!
-      </p>
-    </div>
-
-    <div class="creator-toggle reveal">
-      <button onclick="showCreatorModal()">Creator view — see all replies</button>
-    </div>
-  </div>
-</section>
+<!-- SECTION 4: ATTENDEES (kept for anchor but hidden) -->
+<section id="attendees" style="display:none;"></section>
 
 <!-- SECTION 5: AGENDA & LOCATION -->
 <section id="agenda">
@@ -1153,11 +1158,8 @@
 
     btn.textContent = 'Reply sent ✓';
 
-    // Re-render attendees immediately and scroll to show them
+    // Re-render attendees immediately
     await renderAttendees();
-    setTimeout(() => {
-      document.getElementById('attendees').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 600);
   }
 
   // ── RENDER ATTENDEES ────────────────────────────────
@@ -1168,13 +1170,12 @@
     const list = document.getElementById('attendeeList');
     list.innerHTML = '';
 
-    // Force the attendees section visible regardless of scroll position
+    // Always show attendees section — no scroll reveal needed
     document.querySelectorAll('#attendees .reveal').forEach(el => el.classList.add('visible'));
 
     const visible = creatorMode ? guests : guests.filter(g => g.attending);
     const attendingCount = guests.filter(g => g.attending).length;
 
-    // Update count badge
     const countEl = document.getElementById('attendeeCount');
     if (countEl) countEl.textContent = attendingCount > 0 ? `${attendingCount} going` : '';
 
