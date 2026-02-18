@@ -941,7 +941,7 @@
 <!-- SECTION 4: ATTENDEES -->
 <section id="attendees">
   <div class="attendees-container">
-    <h2 class="section-heading reveal">Who's coming</h2>
+    <h2 class="section-heading reveal">Who's coming <span id="attendeeCount" style="font-size:1rem; color:#cc0000; font-style:normal; margin-left:8px;"></span></h2>
     <p class="section-sub reveal">Guests who have confirmed</p>
 
     <div class="attendee-list" id="attendeeList">
@@ -1094,8 +1094,14 @@
     const btn = document.getElementById('rsvpSubmit');
     btn.disabled = true;
     btn.textContent = 'Sending…';
+    msg.textContent = '';
 
-    const guests = await loadGuests();
+    let guests = [];
+    try {
+      guests = await loadGuests();
+    } catch(e) {
+      console.error('Load error:', e);
+    }
 
     // Update if already exists
     const idx = guests.findIndex(g => g.name.toLowerCase() === name.toLowerCase());
@@ -1107,7 +1113,17 @@
       guests.push({ name, attending: rsvpChoice === 'yes', createdAt: Date.now() });
     }
 
-    await saveGuests(guests);
+    try {
+      await saveGuests(guests);
+    } catch(e) {
+      console.error('Save error:', e);
+      msg.textContent = 'Something went wrong saving your RSVP. Please try again.';
+      msg.style.color = '#cc0000';
+      btn.disabled = false;
+      btn.textContent = 'Send my reply →';
+      return;
+    }
+
     submittedName = name;
 
     // ── Send email notification via EmailJS ─────────
@@ -1135,17 +1151,32 @@
       msg.style.color = '#8b0000';
     }
 
-    btn.textContent = 'Reply sent';
-    renderAttendees();
+    btn.textContent = 'Reply sent ✓';
+
+    // Re-render attendees immediately and scroll to show them
+    await renderAttendees();
+    setTimeout(() => {
+      document.getElementById('attendees').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 600);
   }
 
   // ── RENDER ATTENDEES ────────────────────────────────
   async function renderAttendees() {
-    const guests = await loadGuests();
+    let guests = [];
+    try { guests = await loadGuests(); } catch(e) { console.error('renderAttendees load error:', e); }
+
     const list = document.getElementById('attendeeList');
     list.innerHTML = '';
 
+    // Force the attendees section visible regardless of scroll position
+    document.querySelectorAll('#attendees .reveal').forEach(el => el.classList.add('visible'));
+
     const visible = creatorMode ? guests : guests.filter(g => g.attending);
+    const attendingCount = guests.filter(g => g.attending).length;
+
+    // Update count badge
+    const countEl = document.getElementById('attendeeCount');
+    if (countEl) countEl.textContent = attendingCount > 0 ? `${attendingCount} going` : '';
 
     if (visible.length === 0) {
       list.innerHTML = '<p style="color:rgba(255,255,255,0.3); font-style:italic; text-align:center; font-size:0.95rem; padding:16px 0;">No replies yet — be the first!</p>';
