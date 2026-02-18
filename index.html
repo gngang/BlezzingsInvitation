@@ -1030,28 +1030,33 @@
   // ── ENVELOPE ────────────────────────────────────────
   function openEnvelope() {
     const scene = document.getElementById('envScene');
-    const seal = document.getElementById('waxSeal');
-    const hint = document.getElementById('scrollHint');
+    const seal  = document.getElementById('waxSeal');
+    const hint  = document.getElementById('scrollHint');
     if (scene.classList.contains('opened')) return;
 
-    // Step 1: crack the seal
+    // Step 1: crack the seal (0ms)
     seal.style.animation = 'sealCrack 0.45s cubic-bezier(0.4,0,0.2,1) forwards';
     seal.style.pointerEvents = 'none';
 
-    // Step 2: after seal breaks, open the flap (0.75s)
+    // Step 2: flap swings open (300ms, takes 0.8s)
     setTimeout(() => {
       scene.classList.add('opened');
     }, 300);
 
-    // Step 3: after flap is open, slide card out (flap takes 0.75s, add a bit of overlap)
+    // Step 3: card peeks — just the top edge rises above envelope (1200ms)
+    setTimeout(() => {
+      scene.classList.add('card-peek');
+    }, 1200);
+
+    // Step 4: card fully pulled out (1900ms)
     setTimeout(() => {
       scene.classList.add('card-out');
-    }, 950); // 300 + 650ms overlap
+    }, 1900);
 
-    // Step 4: show scroll hint
+    // Step 5: show scroll hint (2900ms)
     setTimeout(() => {
       hint.classList.add('show');
-    }, 1800);
+    }, 2900);
   }
 
   // ── RSVP CHOICE ─────────────────────────────────────
