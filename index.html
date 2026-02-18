@@ -1006,10 +1006,24 @@
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
   // ── CONFIG ──────────────────────────────────────────
   const CREATOR_PIN = '1234';  // Change this!
   const STORAGE_KEY = 'rsvp-invite-guests-v1';
+
+  // ── EMAILJS CONFIG ───────────────────────────────────
+  // 1. Sign up free at emailjs.com
+  // 2. Add Email Service (connect Gmail) → paste Service ID below
+  // 3. Create Email Template → paste Template ID below
+  // 4. Account → API Keys → paste Public Key below
+  const EMAILJS_PUBLIC_KEY  = 'txMxmJGO7Dw_3jINS';
+  const EMAILJS_SERVICE_ID  = 'service_mi3m8t4';
+  const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';  // ← still need this from EmailJS
+  const NOTIFY_EMAIL        = 'blezzingnzama@gmail.com';
+
+  // Init EmailJS
+  emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
   
   // ── STATE ───────────────────────────────────────────
   let rsvpChoice = null;
@@ -1085,7 +1099,8 @@
 
     // Update if already exists
     const idx = guests.findIndex(g => g.name.toLowerCase() === name.toLowerCase());
-    if (idx >= 0) {
+    const isUpdate = idx >= 0;
+    if (isUpdate) {
       guests[idx].attending = rsvpChoice === 'yes';
       guests[idx].updatedAt = Date.now();
     } else {
@@ -1094,6 +1109,23 @@
 
     await saveGuests(guests);
     submittedName = name;
+
+    // ── Send email notification via EmailJS ─────────
+    if (EMAILJS_TEMPLATE_ID !== 'YOUR_TEMPLATE_ID') {
+      try {
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+          to_email:   NOTIFY_EMAIL,
+          guest_name: name,
+          response:   rsvpChoice === 'yes' ? '✅ Attending' : '❌ Not attending',
+          event:      "Blezzing's Graduation Party — She EaRNed It!",
+          event_date: 'June 20, 2026 · 5:00 PM – 9:00 PM',
+          is_update:  isUpdate ? '(updated response)' : '(new RSVP)',
+          timestamp:  new Date().toLocaleString('en-US', { timeZone: 'America/Detroit' }),
+        });
+      } catch (emailErr) {
+        console.warn('Email failed (RSVP still saved):', emailErr);
+      }
+    }
 
     if (rsvpChoice === 'yes') {
       msg.textContent = '✦ Amazing! We cannot wait to celebrate with you.';
