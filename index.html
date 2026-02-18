@@ -3,29 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>You're Invited</title>
+<title>She Earned It!</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
 <style>
   :root {
-    --cream: #f5f0e8;
-    --cream-dark: #e8dfc8;
-    --gold: #c9a84c;
-    --gold-light: #e2c97e;
-    --gold-dark: #8b6914;
-    --ink: #2c2416;
-    --ink-light: #5a4e3a;
-    --shadow: rgba(44,36,22,0.18);
-    --envelope-bg: #d4b896;
-    --envelope-dark: #b8976e;
+    --cream: #ffffff;
+    --cream-dark: #e8e8e8;
+    --gold: #cc0000;
+    --gold-light: #ff4444;
+    --gold-dark: #990000;
+    --ink: #0a0a0a;
+    --ink-light: #444444;
+    --shadow: rgba(0,0,0,0.3);
+    --envelope-bg: #cc0000;
+    --envelope-dark: #990000;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    background: var(--ink);
+    background: #0a0a0a;
     background-image: 
-      radial-gradient(ellipse at 20% 50%, #1a1208 0%, transparent 60%),
-      radial-gradient(ellipse at 80% 20%, #2a1f0a 0%, transparent 50%);
+      radial-gradient(ellipse at 20% 50%, #1a0000 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, #0a0000 0%, transparent 50%);
     min-height: 100vh;
     font-family: 'Cormorant Garamond', Georgia, serif;
     color: var(--ink);
@@ -47,7 +47,7 @@
     font-family: 'Cormorant Garamond', serif;
     font-style: italic;
     font-size: 1.1rem;
-    color: var(--gold-light);
+    color: rgba(255,255,255,0.45);
     letter-spacing: 0.25em;
     text-transform: uppercase;
     margin-bottom: 48px;
@@ -72,7 +72,7 @@
     width: 100%;
     aspect-ratio: 1.618 / 1;
     perspective: 900px;
-    filter: drop-shadow(0 24px 56px rgba(0,0,0,0.55));
+    filter: drop-shadow(0 24px 56px rgba(200,0,0,0.25)) drop-shadow(0 8px 24px rgba(0,0,0,0.6));
   }
 
   /* Envelope body — sits on z:3, covering the card behind it */
@@ -80,7 +80,7 @@
     position: absolute;
     inset: 0;
     border-radius: 4px;
-    background: #d4b896;
+    background: #cc0000;
     z-index: 3; /* covers the card (z:2) while it's inside */
     /* NO overflow:hidden — card must be able to rise above */
   }
@@ -117,7 +117,7 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    box-shadow: 0 -8px 40px rgba(0,0,0,0.35), 0 0 0 1px rgba(201,168,76,0.4);
+    box-shadow: 0 -8px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.2);
     overflow: hidden;
     /* no default transition — state classes define timing */
   }
@@ -128,7 +128,7 @@
     position: absolute;
     inset: 0;
     background: repeating-linear-gradient(
-      0deg, transparent, transparent 24px, rgba(180,160,100,0.1) 24px, rgba(180,160,100,0.1) 25px
+      0deg, transparent, transparent 24px, rgba(0,0,0,0.05) 24px, rgba(0,0,0,0.05) 25px
     );
     pointer-events: none;
   }
@@ -143,7 +143,7 @@
     font-size: 0.6rem;
     letter-spacing: 0.35em;
     text-transform: uppercase;
-    color: var(--gold-dark);
+    color: #cc0000;
     margin-bottom: 10px;
   }
   .env-card-inner .you-are-invited {
@@ -156,13 +156,13 @@
   .env-card-inner .small-rule {
     width: 48px;
     height: 1px;
-    background: var(--gold);
+    background: #cc0000;
     margin: 12px auto;
-    opacity: 0.7;
+    opacity: 0.9;
   }
   .env-card-inner .card-sub {
     font-size: 0.8rem;
-    color: var(--ink-light);
+    color: #555555;
     letter-spacing: 0.1em;
     font-style: italic;
   }
@@ -226,12 +226,12 @@
     transform: translate(-50%, -50%);
     width: 64px;
     height: 64px;
-    background: radial-gradient(circle at 38% 32%, #d44 0%, #922b21 55%, #5a1510 100%);
+    background: radial-gradient(circle at 38% 32%, #333 0%, #111 55%, #000 100%);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.15), 0 0 0 2px rgba(180,60,40,0.3);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.7), inset 0 2px 4px rgba(255,255,255,0.1), 0 0 0 2px rgba(255,255,255,0.15);
     z-index: 10;
     cursor: pointer;
     transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.4s ease;
@@ -264,7 +264,7 @@
     left: 50%;
     transform: translateX(-50%);
     z-index: 11;
-    color: var(--gold-light);
+    color: rgba(255,255,255,0.45);
     font-style: italic;
     font-size: 0.78rem;
     letter-spacing: 0.15em;
@@ -277,7 +277,7 @@
 
   .scroll-hint {
     margin-top: 52px;
-    color: var(--gold-light);
+    color: rgba(255,255,255,0.45);
     font-style: italic;
     font-size: 0.95rem;
     letter-spacing: 0.1em;
@@ -317,18 +317,18 @@
     content: '';
     position: absolute;
     inset: 12px;
-    border: 1px solid var(--gold);
+    border: 1px solid rgba(0,0,0,0.15);
     pointer-events: none;
-    opacity: 0.6;
+    opacity: 1;
   }
 
   .invite-card::after {
     content: '';
     position: absolute;
     inset: 16px;
-    border: 0.5px solid var(--gold);
+    border: 0.5px solid rgba(0,0,0,0.08);
     pointer-events: none;
-    opacity: 0.3;
+    opacity: 1;
   }
 
   .invite-corner {
@@ -336,17 +336,17 @@
     width: 32px;
     height: 32px;
   }
-  .invite-corner.tl { top: 6px; left: 6px; border-top: 2px solid var(--gold); border-left: 2px solid var(--gold); }
-  .invite-corner.tr { top: 6px; right: 6px; border-top: 2px solid var(--gold); border-right: 2px solid var(--gold); }
-  .invite-corner.bl { bottom: 6px; left: 6px; border-bottom: 2px solid var(--gold); border-left: 2px solid var(--gold); }
-  .invite-corner.br { bottom: 6px; right: 6px; border-bottom: 2px solid var(--gold); border-right: 2px solid var(--gold); }
+  .invite-corner.tl { top: 6px; left: 6px; border-top: 2px solid #cc0000; border-left: 2px solid #cc0000; }
+  .invite-corner.tr { top: 6px; right: 6px; border-top: 2px solid #cc0000; border-right: 2px solid #cc0000; }
+  .invite-corner.bl { bottom: 6px; left: 6px; border-bottom: 2px solid #cc0000; border-left: 2px solid #cc0000; }
+  .invite-corner.br { bottom: 6px; right: 6px; border-bottom: 2px solid #cc0000; border-right: 2px solid #cc0000; }
 
   .invite-eyebrow {
     text-align: center;
     font-size: 0.75rem;
     letter-spacing: 0.35em;
     text-transform: uppercase;
-    color: var(--gold-dark);
+    color: #cc0000;
     margin-bottom: 24px;
   }
 
@@ -370,10 +370,10 @@
     content: '';
     flex: 1;
     height: 1px;
-    background: linear-gradient(to right, transparent, var(--gold), transparent);
+    background: linear-gradient(to right, transparent, #cc0000, transparent);
   }
   .invite-divider-diamond {
-    color: var(--gold);
+    color: #cc0000;
     font-size: 0.6rem;
   }
 
@@ -405,7 +405,7 @@
     font-size: 0.65rem;
     letter-spacing: 0.3em;
     text-transform: uppercase;
-    color: var(--gold-dark);
+    color: #cc0000;
     margin-bottom: 4px;
   }
   .invite-detail-value {
@@ -446,7 +446,7 @@
   }
   .section-sub {
     text-align: center;
-    color: var(--gold-light);
+    color: rgba(255,255,255,0.45);
     font-style: italic;
     margin-bottom: 40px;
     font-size: 0.95rem;
@@ -464,8 +464,8 @@
     content: '';
     position: absolute;
     inset: 8px;
-    border: 1px solid var(--gold);
-    opacity: 0.4;
+    border: 1px solid rgba(0,0,0,0.1);
+    opacity: 1;
     pointer-events: none;
   }
 
@@ -477,14 +477,14 @@
     font-size: 0.7rem;
     letter-spacing: 0.3em;
     text-transform: uppercase;
-    color: var(--gold-dark);
+    color: #cc0000;
     margin-bottom: 8px;
   }
   .rsvp-input {
     width: 100%;
     background: transparent;
     border: none;
-    border-bottom: 1.5px solid var(--envelope-dark);
+    border-bottom: 1.5px solid #cccccc;
     padding: 8px 0;
     font-family: 'Cormorant Garamond', serif;
     font-size: 1.1rem;
@@ -492,7 +492,7 @@
     outline: none;
     transition: border-color 0.3s;
   }
-  .rsvp-input:focus { border-color: var(--gold); }
+  .rsvp-input:focus { border-color: #cc0000; }
 
   .rsvp-choices {
     display: grid;
@@ -501,7 +501,7 @@
     margin-bottom: 24px;
   }
   .rsvp-choice {
-    border: 1.5px solid var(--envelope-dark);
+    border: 1.5px solid #cccccc;
     background: transparent;
     padding: 14px;
     cursor: pointer;
@@ -513,14 +513,14 @@
     border-radius: 1px;
     letter-spacing: 0.05em;
   }
-  .rsvp-choice:hover { border-color: var(--gold); background: rgba(201,168,76,0.06); }
-  .rsvp-choice.selected-yes { border-color: var(--gold); background: rgba(201,168,76,0.12); color: var(--gold-dark); font-weight: 600; }
+  .rsvp-choice:hover { border-color: #cc0000; background: rgba(204,0,0,0.04); }
+  .rsvp-choice.selected-yes { border-color: #cc0000; background: rgba(204,0,0,0.07); color: #cc0000; font-weight: 600; }
   .rsvp-choice.selected-no { border-color: #8b0000; background: rgba(139,0,0,0.06); color: #8b0000; }
 
   .rsvp-submit {
     width: 100%;
-    background: var(--ink);
-    color: var(--cream);
+    background: #0a0a0a;
+    color: #ffffff;
     border: none;
     padding: 16px;
     font-family: 'Playfair Display', serif;
@@ -531,7 +531,7 @@
     transition: background 0.3s, transform 0.2s;
     margin-top: 8px;
   }
-  .rsvp-submit:hover { background: var(--gold-dark); transform: translateY(-1px); }
+  .rsvp-submit:hover { background: #cc0000; transform: translateY(-1px); }
   .rsvp-submit:disabled { opacity: 0.5; cursor: default; transform: none; }
 
   .rsvp-message {
@@ -563,7 +563,7 @@
   }
   .attendee-item {
     background: rgba(245,240,232,0.07);
-    border: 1px solid rgba(201,168,76,0.2);
+    border: 1px solid rgba(255,255,255,0.1);
     padding: 14px 20px;
     display: flex;
     align-items: center;
@@ -580,8 +580,8 @@
     font-size: 0.65rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--gold-light);
-    opacity: 0.7;
+    color: rgba(255,255,255,0.5);
+    opacity: 1;
   }
   .attendee-badge.no {
     color: #c0392b;
@@ -593,8 +593,8 @@
   }
   .creator-toggle button {
     background: transparent;
-    border: 1px solid rgba(201,168,76,0.4);
-    color: var(--gold-light);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.5);
     padding: 8px 20px;
     font-family: 'Cormorant Garamond', serif;
     font-style: italic;
@@ -603,7 +603,7 @@
     letter-spacing: 0.05em;
     transition: all 0.3s;
   }
-  .creator-toggle button:hover { border-color: var(--gold); color: var(--gold); }
+  .creator-toggle button:hover { border-color: rgba(255,255,255,0.5); color: rgba(255,255,255,0.8); }
 
   .creator-modal {
     display: none;
@@ -661,7 +661,7 @@
     font-size: 0.95rem;
   }
   .btn-confirm { background: var(--ink); color: var(--cream); }
-  .btn-cancel { background: transparent; border: 1px solid var(--envelope-dark) !important; color: var(--ink); }
+  .btn-cancel { background: transparent; border: 1px solid #cccccc !important; color: #333; }
 
   /* ── AGENDA SECTION ── */
   #agenda {
@@ -678,7 +678,7 @@
     background: var(--cream);
     padding: 48px 40px;
     border-radius: 2px;
-    box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+    box-shadow: 0 24px 64px rgba(0,0,0,0.6);
     position: relative;
     margin-bottom: 24px;
   }
@@ -686,14 +686,14 @@
     content: '';
     position: absolute;
     inset: 8px;
-    border: 1px solid var(--gold);
-    opacity: 0.35;
+    border: 1px solid rgba(0,0,0,0.1);
+    opacity: 1;
     pointer-events: none;
   }
 
   .agenda-items {
     list-style: none;
-    border-left: 1.5px solid var(--gold);
+    border-left: 1.5px solid #cc0000;
     margin-left: 16px;
     padding-left: 24px;
     margin-top: 24px;
@@ -711,15 +711,15 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: var(--gold);
-    border: 2px solid var(--cream);
-    box-shadow: 0 0 0 1px var(--gold);
+    background: #cc0000;
+    border: 2px solid white;
+    box-shadow: 0 0 0 1px #cc0000;
   }
   .agenda-time {
     font-size: 0.65rem;
     letter-spacing: 0.3em;
     text-transform: uppercase;
-    color: var(--gold-dark);
+    color: #cc0000;
     margin-bottom: 4px;
   }
   .agenda-event {
@@ -746,8 +746,8 @@
     content: '';
     position: absolute;
     inset: 8px;
-    border: 1px solid var(--gold);
-    opacity: 0.35;
+    border: 1px solid rgba(0,0,0,0.1);
+    opacity: 1;
     pointer-events: none;
   }
   .location-name {
@@ -764,8 +764,8 @@
   }
   .location-map-link {
     display: inline-block;
-    background: var(--ink);
-    color: var(--cream);
+    background: #0a0a0a;
+    color: #ffffff;
     padding: 10px 24px;
     font-family: 'Playfair Display', serif;
     font-style: italic;
@@ -774,7 +774,7 @@
     letter-spacing: 0.05em;
     transition: background 0.3s;
   }
-  .location-map-link:hover { background: var(--gold-dark); }
+  .location-map-link:hover { background: #990000; }
 
   /* ── ANIMATIONS ── */
   @keyframes fadeUp {
@@ -805,7 +805,7 @@
   .section-rule {
     width: min(560px, 92vw);
     height: 1px;
-    background: linear-gradient(to right, transparent, rgba(201,168,76,0.3), transparent);
+    background: linear-gradient(to right, transparent, rgba(204,0,0,0.4), transparent);
     margin: 0 auto 60px;
   }
 </style>
@@ -814,7 +814,7 @@
 
 <!-- SECTION 1: ENVELOPE -->
 <section id="hero">
-  <p class="hero-label">A letter for you</p>
+  <p class="hero-label">A special invitation</p>
 
   <div class="envelope-wrapper">
     <!-- env-scene: perspective container, also clips card below horizon -->
@@ -823,24 +823,24 @@
       <!-- Envelope body: visual shell only, z:3, covers card behind it -->
       <div class="env-body">
         <svg class="env-svg" viewBox="0 0 520 322" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="520" height="322" fill="#d4b896"/>
-          <polygon points="0,0 0,322 270,180" fill="#c9a07a" opacity="0.75"/>
-          <polygon points="520,0 520,322 250,180" fill="#be9470" opacity="0.75"/>
-          <polygon points="0,322 520,322 260,180" fill="#c2995e" opacity="0.9"/>
-          <line x1="0" y1="322" x2="260" y2="180" stroke="#a07840" stroke-width="0.6" opacity="0.5"/>
-          <line x1="520" y1="322" x2="260" y2="180" stroke="#a07840" stroke-width="0.6" opacity="0.5"/>
-          <rect x="2" y="2" width="516" height="318" rx="3" fill="none" stroke="#c9a84c" stroke-width="0.8" opacity="0.45"/>
+          <rect width="520" height="322" fill="#cc0000"/>
+          <polygon points="0,0 0,322 270,180" fill="#a00000" opacity="0.7"/>
+          <polygon points="520,0 520,322 250,180" fill="#8b0000" opacity="0.7"/>
+          <polygon points="0,322 520,322 260,180" fill="#990000" opacity="0.9"/>
+          <line x1="0" y1="322" x2="260" y2="180" stroke="#660000" stroke-width="0.6" opacity="0.6"/>
+          <line x1="520" y1="322" x2="260" y2="180" stroke="#660000" stroke-width="0.6" opacity="0.6"/>
+          <rect x="2" y="2" width="516" height="318" rx="3" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
         </svg>
       </div>
 
       <!-- Card: SIBLING of env-body (not child!), starts behind it at z:2 -->
       <div class="env-card" id="envCard">
         <div class="env-card-inner">
-          <div class="eyebrow">Eleanor &amp; James Whitmore</div>
+          <div class="eyebrow">Cordially invited to celebrate</div>
           <div class="small-rule"></div>
-          <div class="you-are-invited">You're<br>Invited</div>
+          <div class="you-are-invited">Blezzing's<br>Graduation!</div>
           <div class="small-rule"></div>
-          <div class="card-sub">Saturday, July 5th · 7 PM</div>
+          <div class="card-sub">June 20, 2026 · Black Tie</div>
         </div>
       </div>
 
@@ -848,14 +848,14 @@
       <div class="env-flap-wrap" id="envFlap">
         <svg width="100%" height="100%" viewBox="0 0 520 180" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
           <!-- Flap triangle -->
-          <polygon points="0,0 520,0 260,170" fill="#dbbf9a"/>
+          <polygon points="0,0 520,0 260,170" fill="#dd1111"/>
           <!-- Flap shading for depth -->
-          <polygon points="0,0 260,170 130,0" fill="#c9a980" opacity="0.4"/>
-          <polygon points="520,0 260,170 390,0" fill="#b8956a" opacity="0.35"/>
+          <polygon points="0,0 260,170 130,0" fill="#880000" opacity="0.5"/>
+          <polygon points="520,0 260,170 390,0" fill="#660000" opacity="0.4"/>
           <!-- Gold liner -->
-          <polygon points="6,0 514,0 260,161" fill="none" stroke="#c9a84c" stroke-width="0.8" opacity="0.55"/>
+          <polygon points="6,0 514,0 260,161" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="0.8"/>
           <!-- Bottom edge of flap (the crease) -->
-          <line x1="0" y1="0" x2="520" y2="0" stroke="#b09060" stroke-width="1" opacity="0.3"/>
+          <line x1="0" y1="0" x2="520" y2="0" stroke="rgba(0,0,0,0.3)" stroke-width="1"/>
         </svg>
       </div>
 
@@ -870,7 +870,7 @@
   </div>
 
   <div class="scroll-hint" id="scrollHint">
-    <span>Scroll to read your invitation</span>
+    <span>Scroll to see the details</span>
     <span class="arrow"></span>
   </div>
 </section>
@@ -883,30 +883,29 @@
     <div class="invite-corner bl"></div>
     <div class="invite-corner br"></div>
 
-    <p class="invite-eyebrow">You are cordially invited to</p>
-    <h1 class="invite-title">A Midsummer Evening Soirée</h1>
+    <p class="invite-eyebrow">You are cordially invited to celebrate</p>
+    <h1 class="invite-title">Blezzing's<br>Graduation Party</h1>
 
     <div class="invite-divider"><span class="invite-divider-diamond">◆</span></div>
 
-    <p class="invite-hosted">hosted by</p>
-    <p class="invite-host-name">Eleanor & James Whitmore</p>
+    <p class="invite-hosted" style="font-size:1.5rem; font-family:'Playfair Display',serif; font-style:italic; color:#cc0000; font-weight:600;">She Ea<span style="text-transform:uppercase;font-size:1.1em;">rn</span>ed It!</p>
 
     <div class="invite-divider"><span class="invite-divider-diamond">◆</span></div>
 
     <div class="invite-details">
       <div class="invite-detail">
         <div class="invite-detail-label">Date</div>
-        <div class="invite-detail-value">Saturday, July 5th</div>
+        <div class="invite-detail-value">Saturday, June 20th, 2026</div>
       </div>
       <div class="invite-detail">
         <div class="invite-detail-label">Time</div>
-        <div class="invite-detail-value">7 o'clock in the evening</div>
+        <div class="invite-detail-value">5:00 PM – 9:00 PM</div>
       </div>
     </div>
 
     <p class="invite-note">
-      Dress code: Garden formal<br>
-      Kindly reply by the 25th of June
+      Dress code: Black Tie — dress nice<br>
+      Kindly RSVP below
     </p>
   </div>
 </section>
@@ -914,8 +913,8 @@
 <!-- SECTION 3: RSVP -->
 <section id="rsvp">
   <div class="rsvp-container">
-    <h2 class="section-heading reveal">Will you attend?</h2>
-    <p class="section-sub reveal">Please grace us with your reply</p>
+    <h2 class="section-heading reveal">Will you join us?</h2>
+    <p class="section-sub reveal">Let us know you're coming</p>
 
     <div class="rsvp-card reveal">
       <div class="rsvp-field">
@@ -942,11 +941,11 @@
 <!-- SECTION 4: ATTENDEES -->
 <section id="attendees">
   <div class="attendees-container">
-    <h2 class="section-heading reveal">Those attending</h2>
-    <p class="section-sub reveal">Other guests who have replied</p>
+    <h2 class="section-heading reveal">Who's coming</h2>
+    <p class="section-sub reveal">Guests who have confirmed</p>
 
     <div class="attendee-list" id="attendeeList">
-      <p style="color:rgba(245,240,232,0.4); font-style:italic; text-align:center; font-size:0.95rem; padding: 16px 0;">
+      <p style="color:rgba(255,255,255,0.3); font-style:italic; text-align:center; font-size:0.95rem; padding: 16px 0;">
         No replies yet — be the first!
       </p>
     </div>
@@ -961,44 +960,34 @@
 <section id="agenda">
   <div class="section-rule"></div>
   <div class="agenda-container">
-    <h2 class="section-heading reveal">The Evening's Programme</h2>
-    <p class="section-sub reveal">What to expect</p>
+    <h2 class="section-heading reveal">Schedule of Events</h2>
+    <p class="section-sub reveal">The evening at a glance</p>
 
     <div class="agenda-card reveal">
       <ul class="agenda-items">
         <li class="agenda-item">
-          <div class="agenda-time">7:00 PM</div>
-          <div class="agenda-event">Arrival & Garden Reception</div>
-          <div class="agenda-desc">Welcome drinks among the rose hedges</div>
+          <div class="agenda-time">4:45 PM</div>
+          <div class="agenda-event">Welcome In</div>
+          <div class="agenda-desc">Mimosas &amp; mingle</div>
         </li>
         <li class="agenda-item">
-          <div class="agenda-time">7:30 PM</div>
-          <div class="agenda-event">Champagne Toast</div>
-          <div class="agenda-desc">Remarks from our hosts</div>
+          <div class="agenda-time">5:00 PM</div>
+          <div class="agenda-event">Dinner</div>
+          <div class="agenda-desc">Welcome speech &amp; food</div>
         </li>
         <li class="agenda-item">
-          <div class="agenda-time">8:00 PM</div>
-          <div class="agenda-event">Seated Dinner</div>
-          <div class="agenda-desc">Five courses with seasonal pairings</div>
-        </li>
-        <li class="agenda-item">
-          <div class="agenda-time">10:00 PM</div>
-          <div class="agenda-event">Dancing & Music</div>
-          <div class="agenda-desc">Live quartet under the summer stars</div>
-        </li>
-        <li class="agenda-item">
-          <div class="agenda-time">12:00 AM</div>
-          <div class="agenda-event">Carriages</div>
-          <div class="agenda-desc">Farewell until next time</div>
+          <div class="agenda-time">5:30 – 9:00 PM</div>
+          <div class="agenda-event">Party Time</div>
+          <div class="agenda-desc">Dance! Celebrate! Have fun!</div>
         </li>
       </ul>
     </div>
 
     <div class="location-block reveal" style="margin-top: 24px;">
       <div style="font-size:1.8rem;">✦</div>
-      <div class="location-name">Whitmore House</div>
-      <div class="location-address">14 Garden Court, Chelsea, London SW3 4RX</div>
-      <a class="location-map-link" href="https://maps.google.com/?q=Chelsea,London" target="_blank">Open in Maps →</a>
+      <div class="location-name">19410 Middlebelt Rd</div>
+      <div class="location-address">Livonia, MI 48152</div>
+      <a class="location-map-link" href="https://maps.google.com/?q=19410+Middlebelt+Rd,+Livonia,+MI+48152" target="_blank">Open in Maps →</a>
     </div>
   </div>
 </section>
@@ -1107,8 +1096,8 @@
     submittedName = name;
 
     if (rsvpChoice === 'yes') {
-      msg.textContent = '✦ Wonderful! We look forward to seeing you.';
-      msg.style.color = 'var(--gold-dark)';
+      msg.textContent = '✦ Amazing! We cannot wait to celebrate with you.';
+      msg.style.color = '#cc0000';
     } else {
       msg.textContent = 'We are sorry you cannot make it. Thank you for letting us know.';
       msg.style.color = '#8b0000';
@@ -1127,7 +1116,7 @@
     const visible = creatorMode ? guests : guests.filter(g => g.attending);
 
     if (visible.length === 0) {
-      list.innerHTML = '<p style="color:rgba(245,240,232,0.4); font-style:italic; text-align:center; font-size:0.95rem; padding:16px 0;">No replies yet — be the first!</p>';
+      list.innerHTML = '<p style="color:rgba(255,255,255,0.3); font-style:italic; text-align:center; font-size:0.95rem; padding:16px 0;">No replies yet — be the first!</p>';
       return;
     }
 
@@ -1135,7 +1124,7 @@
       const item = document.createElement('div');
       item.className = 'attendee-item';
       const badge = g.attending
-        ? '<span class="attendee-badge">Attending</span>'
+        ? '<span class="attendee-badge" style="color:#cc0000">Attending ✓</span>'
         : '<span class="attendee-badge no">Declined</span>';
       item.innerHTML = `<span class="attendee-name">${escapeHtml(g.name)}</span>${badge}`;
       list.appendChild(item);
