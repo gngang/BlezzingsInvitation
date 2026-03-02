@@ -71,6 +71,7 @@
     position: relative;
     width: 100%;
     aspect-ratio: 1.618 / 1;
+    max-height: 50vh;
     perspective: 900px;
     filter: drop-shadow(0 24px 56px rgba(200,0,0,0.25)) drop-shadow(0 8px 24px rgba(0,0,0,0.6));
   }
@@ -808,6 +809,92 @@
     background: linear-gradient(to right, transparent, rgba(204,0,0,0.4), transparent);
     margin: 0 auto 60px;
   }
+
+  /* ── MOBILE FIXES ── */
+  @media (max-width: 600px) {
+    /* Envelope: shrink and fix perspective on mobile */
+    .envelope-wrapper {
+      width: min(340px, 88vw);
+    }
+    .env-scene {
+      perspective: 600px;
+      /* Drop the red glow — kills performance on mobile */
+      filter: drop-shadow(0 8px 24px rgba(0,0,0,0.5));
+    }
+
+    /* Invite card padding */
+    .invite-card {
+      padding: 44px 28px;
+    }
+    .invite-title {
+      font-size: 2rem;
+    }
+
+    /* RSVP card */
+    .rsvp-card {
+      padding: 32px 24px;
+    }
+    .rsvp-choices {
+      grid-template-columns: 1fr;
+    }
+
+    /* Agenda */
+    .agenda-card {
+      padding: 32px 24px;
+    }
+    .location-block {
+      padding: 28px 24px;
+    }
+
+    /* Section headings */
+    .section-heading {
+      font-size: 1.8rem;
+    }
+
+    /* Fix hero padding so envelope isn't cut off */
+    #hero {
+      padding: 60px 20px 60px;
+      justify-content: center;
+    }
+
+    /* Scroll hint closer on mobile */
+    .scroll-hint {
+      margin-top: 32px;
+    }
+
+    /* Wax seal slightly smaller */
+    .wax-seal {
+      width: 52px;
+      height: 52px;
+    }
+    .wax-seal-text {
+      font-size: 0.45rem;
+    }
+  }
+
+  /* Fix iOS Safari -webkit-overflow-scrolling issue */
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* Fix tap highlight on seal */
+  .wax-seal {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  /* Fix font rendering on mobile */
+  body {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Prevent overflow-x causing white flash on iOS */
+  html, body {
+    overflow-x: hidden;
+    position: relative;
+  }
+
 </style>
 </head>
 <body>
@@ -860,7 +947,7 @@
       </div>
 
       <!-- Wax seal: sits at the fold point (center of envelope height) -->
-      <div class="wax-seal" id="waxSeal" onclick="openEnvelope()">
+      <div class="wax-seal" id="waxSeal" onclick="openEnvelope()" ontouchend="openEnvelope(); return false;">
         <div class="wax-seal-text">Open<br>me</div>
       </div>
 
@@ -904,7 +991,7 @@
     </div>
 
     <p class="invite-note">
-      Dress code: Black Tie — dress formal<br>
+      Dress code: Black Tie — dress nice<br>
       Kindly RSVP below
     </p>
   </div>
@@ -1011,186 +1098,135 @@
   </div>
 </div>
 
+<!-- EmailJS -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<script>
-  // ── CONFIG ──────────────────────────────────────────
-  const CREATOR_PIN = '1234';  // Change this!
-  const STORAGE_KEY = 'rsvp-invite-guests-v1';
 
-  // ── EMAILJS CONFIG ───────────────────────────────────
-  // 1. Sign up free at emailjs.com
-  // 2. Add Email Service (connect Gmail) → paste Service ID below
-  // 3. Create Email Template → paste Template ID below
-  // 4. Account → API Keys → paste Public Key below
+<!-- Firebase + App Logic -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+  import { getFirestore, doc, setDoc, collection, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+  // ── CONFIG ───────────────────────────────────────────
+  const CREATOR_PIN         = '1234';
   const EMAILJS_PUBLIC_KEY  = 'txMxmJGO7Dw_3jINS';
   const EMAILJS_SERVICE_ID  = 'service_mi3m8t4';
   const EMAILJS_TEMPLATE_ID = 'template_idyujcx';
   const NOTIFY_EMAIL        = 'blezzingnzama@gmail.com';
 
-  // Init EmailJS
-  emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
-  
-  // ── STATE ───────────────────────────────────────────
-  let rsvpChoice = null;
-  let creatorMode = false;
-  let submittedName = null;
+  // ── FIREBASE ─────────────────────────────────────────
+  const app = initializeApp({
+    apiKey:            "AIzaSyDKjfYEd9lPY-63ZiyvIZvjs0A8dt5qLHQ",
+    authDomain:        "blezzing-invitation.firebaseapp.com",
+    projectId:         "blezzing-invitation",
+    storageBucket:     "blezzing-invitation.firebasestorage.app",
+    messagingSenderId: "731545294749",
+    appId:             "1:731545294749:web:f21075f0d9bb7a7ca50174"
+  });
+  const db = getFirestore(app);
 
-  // ── ENVELOPE ────────────────────────────────────────
-  function openEnvelope() {
+  // ── EMAILJS ──────────────────────────────────────────
+  emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+
+  // ── STATE ────────────────────────────────────────────
+  let rsvpChoice  = null;
+  let creatorMode = false;
+
+  // ── ENVELOPE ─────────────────────────────────────────
+  window.openEnvelope = function() {
     const scene = document.getElementById('envScene');
     const seal  = document.getElementById('waxSeal');
     const hint  = document.getElementById('scrollHint');
     if (scene.classList.contains('opened')) return;
-
-    // Step 1: crack the seal (0ms)
-    seal.style.animation = 'sealCrack 0.45s cubic-bezier(0.4,0,0.2,1) forwards';
+    seal.style.animation    = 'sealCrack 0.45s cubic-bezier(0.4,0,0.2,1) forwards';
     seal.style.pointerEvents = 'none';
+    setTimeout(() => scene.classList.add('opened'),    300);
+    setTimeout(() => scene.classList.add('card-peek'), 1200);
+    setTimeout(() => scene.classList.add('card-out'),  1900);
+    setTimeout(() => hint.classList.add('show'),       2900);
+  };
 
-    // Step 2: flap swings open (300ms, takes 0.8s)
-    setTimeout(() => {
-      scene.classList.add('opened');
-    }, 300);
-
-    // Step 3: card peeks — just the top edge rises above envelope (1200ms)
-    setTimeout(() => {
-      scene.classList.add('card-peek');
-    }, 1200);
-
-    // Step 4: card fully pulled out (1900ms)
-    setTimeout(() => {
-      scene.classList.add('card-out');
-    }, 1900);
-
-    // Step 5: show scroll hint (2900ms)
-    setTimeout(() => {
-      hint.classList.add('show');
-    }, 2900);
-  }
-
-  // ── RSVP CHOICE ─────────────────────────────────────
-  function selectRsvp(choice) {
+  // ── RSVP CHOICE ──────────────────────────────────────
+  window.selectRsvp = function(choice) {
     rsvpChoice = choice;
     document.getElementById('btnYes').className = 'rsvp-choice' + (choice === 'yes' ? ' selected-yes' : '');
-    document.getElementById('btnNo').className = 'rsvp-choice' + (choice === 'no' ? ' selected-no' : '');
-  }
+    document.getElementById('btnNo').className  = 'rsvp-choice' + (choice === 'no'  ? ' selected-no'  : '');
+  };
 
-  // ── STORAGE HELPERS ─────────────────────────────────
-  function loadGuests() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : [];
-    } catch { return []; }
-  }
-
-  function saveGuests(guests) {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(guests));
-    } catch(e) { console.error('Storage error', e); }
-  }
-
-  // ── SUBMIT ──────────────────────────────────────────
-  async function submitRsvp() {
+  // ── SUBMIT ───────────────────────────────────────────
+  window.submitRsvp = async function() {
     const name = document.getElementById('rsvpName').value.trim();
-    const msg = document.getElementById('rsvpMsg');
+    const msg  = document.getElementById('rsvpMsg');
 
-    if (!name) { msg.textContent = 'Please enter your name.'; return; }
+    if (!name)       { msg.textContent = 'Please enter your name.';   return; }
     if (!rsvpChoice) { msg.textContent = 'Please select a response.'; return; }
 
     const btn = document.getElementById('rsvpSubmit');
-    btn.disabled = true;
+    btn.disabled    = true;
     btn.textContent = 'Sending…';
     msg.textContent = '';
 
-    let guests = [];
-    try {
-      guests = loadGuests();
-    } catch(e) {
-      console.error('Load error:', e);
-    }
-
-    // Update if already exists
-    const idx = guests.findIndex(g => g.name.toLowerCase() === name.toLowerCase());
-    const isUpdate = idx >= 0;
-    if (isUpdate) {
-      guests[idx].attending = rsvpChoice === 'yes';
-      guests[idx].updatedAt = Date.now();
-    } else {
-      guests.push({ name, attending: rsvpChoice === 'yes', createdAt: Date.now() });
-    }
+    const attending = rsvpChoice === 'yes';
+    // Use name as document ID — one doc per person, setDoc overwrites on re-submit
+    const docId = name.toLowerCase().replace(/[^a-z0-9]/g, '_');
 
     try {
-      saveGuests(guests);
+      await setDoc(doc(db, 'rsvps', docId), {
+        name,
+        attending,
+        updatedAt: Date.now()
+      });
     } catch(e) {
-      console.error('Save error:', e);
-      msg.textContent = 'Something went wrong saving your RSVP. Please try again.';
+      console.error('Firestore error:', e);
+      msg.textContent = 'Something went wrong. Please try again.';
       msg.style.color = '#cc0000';
-      btn.disabled = false;
+      btn.disabled    = false;
       btn.textContent = 'Send my reply →';
       return;
     }
 
-    submittedName = name;
-
-    // ── Send email notification via EmailJS ─────────
-    if (EMAILJS_TEMPLATE_ID !== 'YOUR_TEMPLATE_ID') {
-      try {
-        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-          to_email:   NOTIFY_EMAIL,
-          guest_name: name,
-          response:   rsvpChoice === 'yes' ? '✅ Attending' : '❌ Not attending',
-          event:      "Blezzing's Graduation Party — She EaRNed It!",
-          event_date: 'June 20, 2026 · 5:00 PM – 9:00 PM',
-          is_update:  isUpdate ? '(updated response)' : '(new RSVP)',
-          timestamp:  new Date().toLocaleString('en-US', { timeZone: 'America/Detroit' }),
-        });
-      } catch (emailErr) {
-        console.warn('Email failed (RSVP still saved):', emailErr);
-      }
+    // Email notification
+    try {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        to_email:   NOTIFY_EMAIL,
+        guest_name: name,
+        response:   attending ? 'Attending' : 'Not attending',
+        event:      "Blezzing's Graduation Party",
+        event_date: 'June 20, 2026 · 5:00 PM - 9:00 PM',
+        is_update:  '',
+        timestamp:  new Date().toLocaleString('en-US', { timeZone: 'America/Detroit' })
+      });
+    } catch(e) {
+      console.warn('Email failed (RSVP still saved):', e);
     }
 
-    if (rsvpChoice === 'yes') {
-      msg.textContent = '✦ Amazing! We cannot wait to celebrate with you.';
-      msg.style.color = '#cc0000';
-    } else {
-      msg.textContent = 'We are sorry you cannot make it. Thank you for letting us know.';
-      msg.style.color = '#8b0000';
-    }
-
+    msg.textContent = attending
+      ? '❆ Amazing! We cannot wait to celebrate with you.'
+      : 'We are sorry you cannot make it. Thank you for letting us know.';
+    msg.style.color = attending ? '#cc0000' : '#8b0000';
     btn.textContent = 'Reply sent ✓';
+  };
 
-    // Re-render attendees immediately
-    renderAttendees();
-  }
-
-  // ── RENDER ATTENDEES ────────────────────────────────
-  async function renderAttendees() {
-    let guests = [];
-    try { guests = loadGuests(); } catch(e) { console.error('renderAttendees load error:', e); }
-
-    const list = document.getElementById('attendeeList');
-    list.innerHTML = '';
-
-    // Always show attendees section — no scroll reveal needed
-    document.querySelectorAll('#attendees .reveal').forEach(el => el.classList.add('visible'));
-
-    const visible = creatorMode ? guests : guests.filter(g => g.attending);
+  // ── RENDER ───────────────────────────────────────────
+  function renderGuests(guests) {
+    const list          = document.getElementById('attendeeList');
+    const countEl       = document.getElementById('attendeeCount');
     const attendingCount = guests.filter(g => g.attending).length;
+    const visible       = creatorMode ? guests : guests.filter(g => g.attending);
 
-    const countEl = document.getElementById('attendeeCount');
-    if (countEl) countEl.textContent = attendingCount > 0 ? `${attendingCount} going` : '';
+    if (countEl) countEl.textContent = attendingCount > 0 ? attendingCount + ' going' : '';
 
+    list.innerHTML = '';
     if (visible.length === 0) {
-      list.innerHTML = '<p style="color:rgba(255,255,255,0.3); font-style:italic; text-align:center; font-size:0.95rem; padding:16px 0;">No replies yet — be the first!</p>';
+      list.innerHTML = '<p style="color:rgba(255,255,255,0.3);font-style:italic;text-align:center;font-size:0.95rem;padding:16px 0;">No replies yet — be the first!</p>';
       return;
     }
-
     visible.forEach(g => {
       const item = document.createElement('div');
       item.className = 'attendee-item';
-      const badge = g.attending
-        ? '<span class="attendee-badge" style="color:#cc0000">Attending ✓</span>'
-        : '<span class="attendee-badge no">Declined</span>';
-      item.innerHTML = `<span class="attendee-name">${escapeHtml(g.name)}</span>${badge}`;
+      item.innerHTML = '<span class="attendee-name">' + escapeHtml(g.name) + '</span>'
+        + (g.attending
+          ? '<span class="attendee-badge" style="color:#cc0000">Attending ✓</span>'
+          : '<span class="attendee-badge no">Declined</span>');
       list.appendChild(item);
     });
   }
@@ -1199,57 +1235,54 @@
     return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
-  // ── CREATOR MODAL ───────────────────────────────────
-  function showCreatorModal() {
-    if (creatorMode) { creatorMode = false; renderAttendees(); return; }
+  // Real-time listener — fires instantly whenever anyone RSVPs from any device
+  onSnapshot(collection(db, 'rsvps'), snapshot => {
+    renderGuests(snapshot.docs.map(d => d.data()));
+  });
+
+  // ── CREATOR MODAL ────────────────────────────────────
+  window.showCreatorModal = function() {
+    if (creatorMode) {
+      creatorMode = false;
+      getDocs(collection(db, 'rsvps')).then(s => renderGuests(s.docs.map(d => d.data())));
+      return;
+    }
     document.getElementById('creatorModal').classList.add('show');
     document.getElementById('creatorPin').value = '';
     document.getElementById('pinError').textContent = '';
     setTimeout(() => document.getElementById('creatorPin').focus(), 100);
-  }
+  };
 
-  function hideCreatorModal() {
+  window.hideCreatorModal = function() {
     document.getElementById('creatorModal').classList.remove('show');
-  }
+  };
 
-  function checkCreatorPin() {
+  window.checkCreatorPin = function() {
     const pin = document.getElementById('creatorPin').value;
     if (pin === CREATOR_PIN) {
       creatorMode = true;
       hideCreatorModal();
-      renderAttendees();
-      document.querySelector('.creator-toggle button').textContent = 'Hide declined guests';
+      getDocs(collection(db, 'rsvps')).then(s => renderGuests(s.docs.map(d => d.data())));
     } else {
       document.getElementById('pinError').textContent = 'Incorrect PIN.';
     }
-  }
+  };
 
   document.getElementById('creatorPin').addEventListener('keydown', e => {
     if (e.key === 'Enter') checkCreatorPin();
   });
-
-  // Close modal on backdrop click
   document.getElementById('creatorModal').addEventListener('click', function(e) {
     if (e.target === this) hideCreatorModal();
   });
 
   // ── SCROLL REVEAL ────────────────────────────────────
-  const observer = new IntersectionObserver((entries) => {
+  const observer = new IntersectionObserver(entries => {
     entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible');
-        observer.unobserve(e.target);
-      }
+      if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
     });
   }, { threshold: 0.15 });
-
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-  // ── INIT ─────────────────────────────────────────────
-  renderAttendees();
-
-  // Poll every 10s so guests see new RSVPs without refreshing
-  setInterval(renderAttendees, 10000);
 </script>
 </body>
 </html>
