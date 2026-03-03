@@ -1028,6 +1028,7 @@
       <h3 style="font-family:'Playfair Display',serif; font-size:1.4rem; font-style:italic; color:white; text-align:center; margin-bottom:6px;">
         Who's coming <span id="attendeeCount" style="font-size:1rem; color:#cc0000; font-style:normal;"></span>
       </h3>
+      <p style="text-align:center; color:rgba(255,255,255,0.4); font-style:italic; font-size:0.9rem; margin-bottom:20px;">Guests who have confirmed</p>
 
       <div class="attendee-list" id="attendeeList">
         <p style="color:rgba(255,255,255,0.3); font-style:italic; text-align:center; font-size:0.95rem; padding:16px 0;">
@@ -1097,23 +1098,6 @@
   </div>
 </div>
 
-<!-- Function shim: handles clicks before module loads -->
-<script>
-  // These stubs will be overwritten by the module once it loads.
-  // If called before the module is ready, they queue the call.
-  ['openEnvelope','selectRsvp','submitRsvp','showCreatorModal','hideCreatorModal','checkCreatorPin'].forEach(fn => {
-    window[fn] = window[fn] || function() {
-      // Module not ready yet — wait and retry
-      const args = arguments;
-      const interval = setInterval(() => {
-        if (window['_moduleReady']) {
-          clearInterval(interval);
-          window[fn].apply(null, args);
-        }
-      }, 50);
-    };
-  });
-</script>
 <!-- EmailJS -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
@@ -1224,37 +1208,27 @@
 
   // ── RENDER ───────────────────────────────────────────
   function renderGuests(guests) {
-    const list           = document.getElementById('attendeeList');
-    const countEl        = document.getElementById('attendeeCount');
+    const list          = document.getElementById('attendeeList');
+    const countEl       = document.getElementById('attendeeCount');
     const attendingCount = guests.filter(g => g.attending).length;
-    const declinedCount  = guests.filter(g => !g.attending).length;
+    const visible       = creatorMode ? guests : guests.filter(g => g.attending);
 
-    // Always show the count
     if (countEl) countEl.textContent = attendingCount > 0 ? attendingCount + ' going' : '';
 
     list.innerHTML = '';
-
-    if (creatorMode) {
-      // CREATOR: full names, attending + declined
-      if (guests.length === 0) {
-        list.innerHTML = '<p style="color:rgba(255,255,255,0.3);font-style:italic;text-align:center;font-size:0.95rem;padding:16px 0;">No replies yet.</p>';
-        return;
-      }
-      const summary = document.createElement('p');
-      summary.style.cssText = 'color:rgba(255,255,255,0.5);font-style:italic;text-align:center;font-size:0.85rem;margin-bottom:16px;';
-      summary.textContent = attendingCount + ' attending · ' + declinedCount + ' declined';
-      list.appendChild(summary);
-      guests.forEach(g => {
-        const item = document.createElement('div');
-        item.className = 'attendee-item';
-        item.innerHTML = '<span class="attendee-name">' + escapeHtml(g.name) + '</span>'
-          + (g.attending
-            ? '<span class="attendee-badge" style="color:#cc0000">Attending ✓</span>'
-            : '<span class="attendee-badge no">Declined</span>');
-        list.appendChild(item);
-      });
+    if (visible.length === 0) {
+      list.innerHTML = '<p style="color:rgba(255,255,255,0.3);font-style:italic;text-align:center;font-size:0.95rem;padding:16px 0;">No replies yet — be the first!</p>';
+      return;
     }
-    // PUBLIC: no names shown, count in heading is enough
+    visible.forEach(g => {
+      const item = document.createElement('div');
+      item.className = 'attendee-item';
+      item.innerHTML = '<span class="attendee-name">' + escapeHtml(g.name) + '</span>'
+        + (g.attending
+          ? '<span class="attendee-badge" style="color:#cc0000">Attending ✓</span>'
+          : '<span class="attendee-badge no">Declined</span>');
+      list.appendChild(item);
+    });
   }
 
   function escapeHtml(s) {
@@ -1309,7 +1283,6 @@
   }, { threshold: 0.15 });
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-  window._moduleReady = true;
 </script>
 </body>
 </html>
