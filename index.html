@@ -1028,7 +1028,7 @@
       <h3 style="font-family:'Playfair Display',serif; font-size:1.4rem; font-style:italic; color:white; text-align:center; margin-bottom:6px;">
         Who's coming <span id="attendeeCount" style="font-size:1rem; color:#cc0000; font-style:normal;"></span>
       </h3>
-      <p style="text-align:center; color:rgba(255,255,255,0.4); font-style:italic; font-size:0.9rem; margin-bottom:20px;">Guests who have confirmed</p>
+      <p id="attendeeSummary" style="text-align:center; color:rgba(255,255,255,0.4); font-style:italic; font-size:0.9rem; margin-bottom:20px;"></p>
 
       <div class="attendee-list" id="attendeeList">
         <p style="color:rgba(255,255,255,0.3); font-style:italic; text-align:center; font-size:0.95rem; padding:16px 0;">
@@ -1208,28 +1208,42 @@
 
   // ── RENDER ───────────────────────────────────────────
   function renderGuests(guests) {
-    const list          = document.getElementById('attendeeList');
-    const countEl       = document.getElementById('attendeeCount');
-    const attendingCount = guests.filter(g => g.attending).length;
-    const visible       = creatorMode ? guests : guests.filter(g => g.attending);
+  const list           = document.getElementById('attendeeList');
+  const countEl        = document.getElementById('attendeeCount');
+  const summaryEl      = document.getElementById('attendeeSummary');
+  const attendingCount = guests.filter(g => g.attending).length;
+  const declinedCount  = guests.filter(g => !g.attending).length;
 
-    if (countEl) countEl.textContent = attendingCount > 0 ? attendingCount + ' going' : '';
+  if (countEl) countEl.textContent = attendingCount > 0 ? attendingCount + ' going' : '';
 
-    list.innerHTML = '';
-    if (visible.length === 0) {
-      list.innerHTML = '<p style="color:rgba(255,255,255,0.3);font-style:italic;text-align:center;font-size:0.95rem;padding:16px 0;">No replies yet — be the first!</p>';
-      return;
+  if (summaryEl) {
+    if (creatorMode && guests.length > 0) {
+      summaryEl.textContent = attendingCount + ' attending · ' + declinedCount + ' declined';
+    } else {
+      summaryEl.textContent = '';
     }
-    visible.forEach(g => {
-      const item = document.createElement('div');
-      item.className = 'attendee-item';
-      item.innerHTML = '<span class="attendee-name">' + escapeHtml(g.name) + '</span>'
-        + (g.attending
-          ? '<span class="attendee-badge" style="color:#cc0000">Attending ✓</span>'
-          : '<span class="attendee-badge no">Declined</span>');
-      list.appendChild(item);
-    });
   }
+
+  list.innerHTML = '';
+  if (!creatorMode) {
+    // Public: no list, count already shown in heading
+    return;
+  }
+  // Creator: full list
+  if (guests.length === 0) {
+    list.innerHTML = '<p style="color:rgba(255,255,255,0.3);font-style:italic;text-align:center;font-size:0.95rem;padding:16px 0;">No replies yet.</p>';
+    return;
+  }
+  guests.forEach(g => {
+    const item = document.createElement('div');
+    item.className = 'attendee-item';
+    item.innerHTML = '<span class="attendee-name">' + escapeHtml(g.name) + '</span>'
+      + (g.attending
+        ? '<span class="attendee-badge" style="color:#cc0000">Attending ✓</span>'
+        : '<span class="attendee-badge no">Declined</span>');
+    list.appendChild(item);
+  });
+}
 
   function escapeHtml(s) {
     return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
